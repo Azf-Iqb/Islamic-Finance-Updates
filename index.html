@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Islamic Finance &amp; Shariah Compliance News Hub</title>
+<style>
+  :root{
+    --green:#0b5d3b; --green-dark:#083f28; --gold:#c9a24b; --bg:#f5f6f4;
+    --card:#ffffff; --text:#1c2a22; --muted:#5b6b62; --border:#e2e6e0;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:'Segoe UI',Tahoma,Arial,sans-serif;background:var(--bg);color:var(--text);}
+  header{background:linear-gradient(135deg,var(--green-dark),var(--green));color:#fff;padding:22px 28px;}
+  header h1{margin:0;font-size:22px;letter-spacing:.3px;}
+  header p{margin:6px 0 0;font-size:13px;color:#dfeee6;}
+
+  nav.modes{display:flex;gap:8px;background:var(--green-dark);padding:0 28px;flex-wrap:wrap;}
+  nav.modes .mode-tab{padding:12px 18px;font-size:14px;font-weight:600;color:#cfe4d8;cursor:pointer;
+    border-bottom:3px solid transparent;user-select:none;}
+  nav.modes .mode-tab:hover{color:#fff;}
+  nav.modes .mode-tab.active{color:#fff;border-bottom-color:var(--gold);}
+
+  .toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;background:#fff;padding:14px 28px;
+    border-bottom:1px solid var(--border);position:sticky;top:0;z-index:5;}
+  .toolbar input[type=text]{flex:1;min-width:200px;padding:9px 12px;border:1px solid var(--border);border-radius:6px;font-size:14px;}
+  .tabs{display:flex;flex-wrap:wrap;gap:6px;padding:12px 28px 0;}
+  .tab{padding:7px 14px;border-radius:20px;background:#eef1ec;border:1px solid var(--border);cursor:pointer;
+    font-size:13px;color:var(--muted);user-select:none;}
+  .tab.active{background:var(--green);color:#fff;border-color:var(--green);}
+  .region-btn{padding:8px 16px;border-radius:20px;background:#eef1ec;border:1px solid var(--border);cursor:pointer;
+    font-size:13px;color:var(--muted);user-select:none;font-weight:600;}
+  .region-btn.active{background:var(--gold);color:#3a2e00;border-color:var(--gold);}
+  button{cursor:pointer;border:none;border-radius:6px;padding:9px 16px;font-size:13px;font-weight:600;}
+  #refreshBtn{background:var(--gold);color:#3a2e00;}
+  #refreshBtn:disabled{opacity:.6;cursor:progress;}
+  main{padding:18px 28px 40px;max-width:1200px;margin:0 auto;}
+  .status{font-size:12.5px;color:var(--muted);margin:0 0 14px;}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px;
+    display:flex;flex-direction:column;gap:8px;transition:box-shadow .15s;}
+  .card:hover{box-shadow:0 4px 14px rgba(0,0,0,.08);}
+  .card .meta{display:flex;justify-content:space-between;align-items:center;font-size:11.5px;color:var(--muted);flex-wrap:wrap;gap:4px;}
+  .badge{background:#eaf3ee;color:var(--green-dark);border-radius:12px;padding:2px 9px;font-weight:600;font-size:11px;}
+  .country-badge{background:#f7efe0;color:#8a6d1f;border-radius:12px;padding:2px 9px;font-weight:600;font-size:11px;}
+  .card a.title{font-size:15px;font-weight:600;color:var(--text);text-decoration:none;line-height:1.35;}
+  .card a.title:hover{color:var(--green);text-decoration:underline;}
+  .card .desc{font-size:13px;color:var(--muted);line-height:1.45;
+    display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;}
+  .card .source{font-size:12px;color:var(--gold);font-weight:600;}
+  mark{background:#fdf1c8;padding:0 2px;border-radius:2px;}
+  .empty{text-align:center;color:var(--muted);padding:60px 0;font-size:14px;}
+  .section-intro{font-size:13px;color:var(--muted);margin:14px 0 6px;line-height:1.5;}
+  .footer-note{max-width:1200px;margin:0 auto 10px;padding:0 28px;font-size:12px;color:var(--muted);}
+  .footer-note code{background:#eef1ec;padding:1px 5px;border-radius:4px;}
+  .loader{display:inline-block;width:12px;height:12px;border:2px solid #fff;border-top-color:transparent;
+    border-radius:50%;animation:spin 0.8s linear infinite;margin-right:6px;vertical-align:middle;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+  .diagnostics{max-width:1200px;margin:0 auto 20px;padding:0 28px;}
+  .diag-box{background:#fff8e6;border:1px solid #eed58a;border-radius:8px;padding:14px 18px;font-size:12.5px;color:#5a4a10;display:none;}
+  .diag-box.show{display:block;}
+  .diag-box h4{margin:0 0 8px;font-size:13px;}
+  .diag-row{display:flex;gap:8px;padding:3px 0;border-bottom:1px dashed #eed58a;}
+  .diag-row:last-child{border-bottom:none;}
+  .diag-status{font-weight:700;min-width:70px;}
+  .diag-status.ok{color:#0b5d3b;}
+  .diag-status.fail{color:#a83232;}
+  .disclaimer{max-width:1200px;margin:10px auto 40px;padding:16px 28px;border-top:1px solid var(--border);
+    font-size:11.5px;color:#8a938c;line-height:1.6;text-align:center;}
+  .view{display:none;}
+  .view.active{display:block;}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🕌 Islamic Finance &amp; Shariah Compliance News Hub</h1>
+  <p>Live aggregated coverage of Sukuk, Takaful, Shariah banking, business/trade openings, and career opportunities connected to the global Islamic economy.</p>
+</header>
+
+<nav class="modes" id="modeNav"></nav>
+
+<div class="toolbar">
+  <input type="text" id="searchBox" placeholder="Search headlines, jobs, or opportunities...">
+  <button id="refreshBtn" onclick="loadCurrentView()">⟳ Refresh</button>
+</div>
+
+<!-- NEWS VIEW -->
+<div class="view active" id="view-news">
+  <div class="tabs" id="tabs-news"></div>
+</div>
+
+<!-- BUSINESS VIEW -->
+<div class="view" id="view-business">
+  <div class="tabs" id="tabs-business"></div>
+</div>
+
+<!-- CAREERS VIEW -->
+<div class="view" id="view-careers">
+  <div class="tabs" id="tabs-careers"></div>
+</div>
+
+<main>
+  <p class="section-intro" id="sectionIntro"></p>
+  <p class="status" id="statusLine">Loading…</p>
+  <div class="diagnostics">
+    <div class="diag-box" id="diagBox">
+      <h4>⚠ Connection diagnostics (shown automatically if fetching fails)</h4>
+      <div id="diagContent"></div>
+    </div>
+  </div>
+  <div class="grid" id="grid"></div>
+</main>
+
+<div class="footer-note">
+  <p><strong>How this works:</strong> This page pulls live RSS searches (Google News for industry headlines and business opportunities; Indeed regional feeds for job openings, with a news-based fallback where job-board feeds are unavailable), converts them via the free <code>rss2json.com</code> bridge (with an automatic CORS-proxy fallback), then merges, de-duplicates and sorts everything by date. No installation, login, or server needed.</p>
+</div>
+
+<div class="disclaimer">
+  This tool has been created purely for the benefit and convenience of professionals in the Islamic finance and Shariah compliance community, and is not intended for any commercial use, resale, or redistribution. It aggregates publicly available headlines from third-party sources for informational purposes only; accuracy, completeness, and timeliness of the underlying content remain the responsibility of the original publishers. This utility was created by Azf. Iqbal, through AI.
+</div>
+
+<script>
+/* ============ CONFIGURATION ============ */
+
+const NEWS_FEEDS = [
+  {name:"Global Islamic Finance", category:"Global", query:'"Islamic finance" OR "Islamic banking"'},
+  {name:"Sukuk Markets", category:"Sukuk", query:'Sukuk'},
+  {name:"Takaful", category:"Takaful", query:'Takaful insurance'},
+  {name:"Shariah Compliance & Standards", category:"Shariah/Standards", query:'"Shariah compliant" OR AAOIFI OR IFSB'},
+  {name:"Murabaha / Ijarah / Musharakah", category:"Contracts", query:'Murabaha OR Ijarah OR Musharakah OR Mudarabah'},
+  {name:"Pakistan Islamic Finance", category:"Pakistan", query:'Pakistan ("Islamic banking" OR Shariah OR Sukuk OR "State Bank of Pakistan")'},
+  {name:"GCC & Gulf Islamic Banking", category:"GCC", query:'("Islamic bank" OR Sukuk) (UAE OR Saudi OR Qatar OR Bahrain OR Kuwait)'},
+  {name:"Fintech & Digital Islamic Finance", category:"Fintech", query:'"Islamic fintech" OR "digital Islamic banking"'},
+];
+
+const CAREER_REGIONS = [
+  {name:"Pakistan", indeedHost:"pk.indeed.com", location:"Pakistan", fallbackQuery:'("Islamic banking" OR "Shariah") (hiring OR "job vacancy" OR appointed OR recruits) Pakistan'},
+  {name:"Middle East / GCC", indeedHost:"ae.indeed.com", location:"United Arab Emirates", fallbackQuery:'("Islamic bank" OR "Islamic finance" OR Takaful) (hiring OR "job vacancy" OR appointed) (UAE OR Saudi OR Qatar OR Bahrain OR Kuwait)'},
+  {name:"Southeast Asia", indeedHost:"www.indeed.com", location:"Malaysia", fallbackQuery:'("Islamic banking" OR "Islamic finance" OR Takaful) (hiring OR "job vacancy" OR appointed) (Malaysia OR Indonesia OR Brunei)'},
+  {name:"South Asia", indeedHost:"www.indeed.com", location:"Bangladesh", fallbackQuery:'("Islamic banking" OR "Islamic finance") (hiring OR "job vacancy" OR appointed) (Bangladesh OR "Sri Lanka")'},
+  {name:"UK & Europe", indeedHost:"uk.indeed.com", location:"United Kingdom", fallbackQuery:'("Islamic finance" OR "Islamic banking" OR Takaful) (hiring OR "job vacancy" OR appointed) (UK OR London OR Europe)'},
+  {name:"Global / Remote", indeedHost:"www.indeed.com", location:"Remote", fallbackQuery:'("Islamic finance" OR "Islamic banking" OR Takaful) (hiring OR "remote job" OR "job vacancy")'},
+];
+const CAREER_KEYWORDS = "Islamic banking OR Islamic finance OR Shariah compliance OR Takaful OR Sukuk";
+
+const BUSINESS_FEEDS = [
+  {name:"Trade & Export Opportunities (Pakistan)", category:"Trade & Export", query:'Pakistan (exports OR "trade finance" OR "export incentive" OR "free trade agreement")'},
+  {name:"Distribution & FMCG Growth", category:"Distribution/FMCG", query:'Pakistan ("distribution agreement" OR FMCG OR "sales network" OR "distributor appointed")'},
+  {name:"Manufacturing & Industry Expansion", category:"Manufacturing", query:'Pakistan (manufacturing OR "industrial expansion" OR "new factory" OR "production facility")'},
+  {name:"SME & Islamic Trade Financing", category:"SME Financing", query:'("Islamic trade finance" OR "SME financing" OR Murabaha) (Pakistan OR SME OR exporters)'},
+  {name:"GCC & Gulf Business Openings", category:"GCC Opportunities", query:'(GCC OR UAE OR Saudi OR Qatar) ("business opportunity" OR "trade delegation" OR "investment opportunity" OR "franchise opportunity")'},
+  {name:"Halal Industry & Certification Expansion", category:"Halal Industry", query:'("Halal certification" OR "Halal export" OR "Halal industry") (Pakistan OR global OR expansion)'},
+  {name:"Government Tenders & Trade Policy", category:"Policy & Tenders", query:'Pakistan ("import policy" OR "export policy" OR tender OR "trade tariff" OR SECP OR "State Bank of Pakistan")'},
+  {name:"Sukuk-Financed Business & Infrastructure Projects", category:"Project Financing", query:'Sukuk ("project financing" OR infrastructure OR industrial OR manufacturer)'},
+];
+
+let currentMode = "news";
+let activeCategory = { news: "All", business: "All" };
+let activeRegion = CAREER_REGIONS[0].name;
+let allItems = { news: [], careers: [], business: [] };
+let diagEntries = [];
+
+/* ============ MODE NAVIGATION ============ */
+
+const MODES = [
+  {key:"news", label:"📰 News"},
+  {key:"business", label:"🤝 Business Opportunities"},
+  {key:"careers", label:"💼 Careers"}
+];
+
+function buildModeNav(){
+  const nav = document.getElementById("modeNav");
+  nav.innerHTML = "";
+  MODES.forEach(m=>{
+    const el = document.createElement("div");
+    el.className = "mode-tab" + (m.key===currentMode ? " active" : "");
+    el.textContent = m.label;
+    el.onclick = ()=> switchMode(m.key);
+    nav.appendChild(el);
+  });
+}
+
+function switchMode(mode){
+  currentMode = mode;
+  document.querySelectorAll(".view").forEach(v=>v.classList.remove("active"));
+  document.getElementById("view-"+mode).classList.add("active");
+  buildModeNav();
+
+  const intro = document.getElementById("sectionIntro");
+  if(mode==="news"){
+    intro.textContent = "Curated global and Pakistan-focused Islamic finance, Sukuk, Takaful and Shariah compliance headlines.";
+    buildCategoryTabs("tabs-news", NEWS_FEEDS, "news");
+  } else if(mode==="business"){
+    intro.textContent = "News relevant to distribution, manufacturing, exports, and trade/financing opportunities for Pakistani businesses expanding locally and abroad.";
+    buildCategoryTabs("tabs-business", BUSINESS_FEEDS, "business");
+  } else if(mode==="careers"){
+    intro.textContent = "Open positions in Islamic banking, Takaful and Shariah compliance, filterable by region. Where live job-board listings are unavailable, relevant hiring-related news is shown instead.";
+    buildRegionTabs();
+  }
+
+  if(allItems[mode].length === 0){
+    loadCurrentView();
+  }else{
+    render();
+  }
+}
+
+function buildCategoryTabs(containerId, feeds, modeKey){
+  const categories = ["All", ...new Set(feeds.map(f=>f.category))];
+  const el = document.getElementById(containerId);
+  el.innerHTML = "";
+  categories.forEach(cat=>{
+    const tab = document.createElement("div");
+    tab.className = "tab" + (cat===activeCategory[modeKey] ? " active" : "");
+    tab.textContent = cat;
+    tab.onclick = ()=>{ activeCategory[modeKey] = cat; buildCategoryTabs(containerId, feeds, modeKey); render(); };
+    el.appendChild(tab);
+  });
+}
+
+function buildRegionTabs(){
+  const el = document.getElementById("tabs-careers");
+  el.innerHTML = "";
+  CAREER_REGIONS.forEach(r=>{
+    const btn = document.createElement("div");
+    btn.className = "region-btn" + (r.name===activeRegion ? " active" : "");
+    btn.textContent = r.name;
+    btn.onclick = ()=>{ activeRegion = r.name; buildRegionTabs(); loadCurrentView(); };
+    el.appendChild(btn);
+  });
+}
+
+/* ============ FETCH HELPERS ============ */
+
+function withTimeout(promise, ms){
+  return Promise.race([
+    promise,
+    new Promise((_,reject)=> setTimeout(()=> reject(new Error("Timed out after "+(ms/1000)+"s")), ms))
+  ]);
+}
+
+function googleNewsUrl(query){
+  return `https://news.google.com/rss/search?q=${encodeURIComponent(query)}&hl=en-PK&gl=PK&ceid=PK:en`;
+}
+
+function indeedRssUrl(host, keywords, location){
+  return `https://${host}/rss?q=${encodeURIComponent(keywords)}&l=${encodeURIComponent(location)}`;
+}
+
+async function fetchViaRss2Json(rssUrl){
+  const api = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rssUrl)}`;
+  const res = await withTimeout(fetch(api), 12000);
+  if(!res.ok) throw new Error("HTTP "+res.status);
+  const data = await res.json();
+  if(data.status !== "ok") throw new Error("rss2json returned status: "+data.status);
+  if(!data.items || data.items.length === 0) throw new Error("No items returned");
+  return data.items.map(it=>({
+    title: it.title || "",
+    link: it.link,
+    pubDate: it.pubDate,
+    description: (it.description || "").replace(/<[^>]+>/g,"").slice(0,220),
+  }));
+}
+
+async function fetchViaProxyFallback(rssUrl){
+  const proxied = `https://api.allorigins.win/raw?url=${encodeURIComponent(rssUrl)}`;
+  const res = await withTimeout(fetch(proxied), 12000);
+  if(!res.ok) throw new Error("HTTP "+res.status);
+  const text = await res.text();
+  const doc = new DOMParser().parseFromString(text, "text/xml");
+  const items = [...doc.querySelectorAll("item")];
+  if(items.length === 0) throw new Error("No items parsed from proxy response");
+  return items.map(it=>({
+    title: it.querySelector("title")?.textContent || "",
+    link: it.querySelector("link")?.textContent || "#",
+    pubDate: it.querySelector("pubDate")?.textContent || "",
+    description: (it.querySelector("description")?.textContent || "").replace(/<[^>]+>/g,"").slice(0,220),
+  }));
+}
+
+async function fetchRssSmart(rssUrl, label){
+  try{
+    const items = await fetchViaRss2Json(rssUrl);
+    diagLog(label, "ok", "rss2json", items.length+" items");
+    return items;
+  }catch(e){
+    try{
+      const items = await fetchViaProxyFallback(rssUrl);
+      diagLog(label, "ok", "allorigins fallback", items.length+" items");
+      return items;
+    }catch(e2){
+      diagLog(label, "fail", "both methods", e.message + " | " + e2.message);
+      return [];
+    }
+  }
+}
+
+function diagLog(name, status, method, detail){
+  diagEntries.push({name, status, method, detail});
+}
+
+function dedupe(items){
+  const seen = new Set();
+  return items.filter(it=>{
+    const key = it.title.toLowerCase().replace(/[^a-z0-9]/g,"").slice(0,60);
+    if(seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
+
+/* ============ LOADERS PER MODE ============ */
+
+async function loadNews(){
+  const results = await Promise.all(NEWS_FEEDS.map(async feed=>{
+    const items = await fetchRssSmart(googleNewsUrl(feed.query), feed.name);
+    return items.map(it=>({...it, source: feed.name, category: feed.category}));
+  }));
+  return dedupe(results.flat()).sort((a,b)=> new Date(b.pubDate) - new Date(a.pubDate));
+}
+
+async function loadCareers(){
+  const region = CAREER_REGIONS.find(r=>r.name===activeRegion);
+  const primaryUrl = indeedRssUrl(region.indeedHost, CAREER_KEYWORDS, region.location);
+  let items = await fetchRssSmart(primaryUrl, region.name+" (Indeed)");
+  items = items.map(it=>({...it, source:"Indeed – "+region.name, category:"Open Job", isJobListing:true}));
+
+  const fallbackItems = await fetchRssSmart(googleNewsUrl(region.fallbackQuery), region.name+" (Hiring news)");
+  const fallbackMapped = fallbackItems.map(it=>({...it, source:"Hiring News – "+region.name, category:"Hiring News", isJobListing:false}));
+
+  return dedupe([...items, ...fallbackMapped]).sort((a,b)=> new Date(b.pubDate) - new Date(a.pubDate));
+}
+
+async function loadBusiness(){
+  const results = await Promise.all(BUSINESS_FEEDS.map(async feed=>{
+    const items = await fetchRssSmart(googleNewsUrl(feed.query), feed.name);
+    return items.map(it=>({...it, source: feed.name, category: feed.category}));
+  }));
+  return dedupe(results.flat()).sort((a,b)=> new Date(b.pubDate) - new Date(a.pubDate));
+}
+
+async function loadCurrentView(){
+  const btn = document.getElementById("refreshBtn");
+  const statusLine = document.getElementById("statusLine");
+  btn.disabled = true;
+  btn.innerHTML = '<span class="loader"></span>Refreshing...';
+  diagEntries = [];
+
+  if(currentMode === "news"){
+    statusLine.textContent = "Fetching latest headlines from " + NEWS_FEEDS.length + " curated sources…";
+    allItems.news = await loadNews();
+  } else if(currentMode === "business"){
+    statusLine.textContent = "Fetching business, trade and distribution opportunities…";
+    allItems.business = await loadBusiness();
+  } else if(currentMode === "careers"){
+    statusLine.textContent = "Fetching open roles and hiring news for " + activeRegion + "…";
+    allItems.careers = await loadCareers();
+  }
+
+  btn.disabled = false;
+  btn.innerHTML = "⟳ Refresh";
+  renderDiagnostics();
+
+  const count = allItems[currentMode].length;
+  statusLine.textContent = count === 0
+    ? `0 results loaded — see diagnostics box above for details. Last attempt: ${new Date().toLocaleString()}`
+    : `${count} results loaded · Last updated ${new Date().toLocaleString()}`;
+  render();
+}
+
+/* ============ DIAGNOSTICS ============ */
+
+function renderDiagnostics(){
+  const box = document.getElementById("diagBox");
+  const content = document.getElementById("diagContent");
+  const failCount = diagEntries.filter(d=>d.status==="fail").length;
+  if(failCount === 0){
+    box.classList.remove("show");
+    return;
+  }
+  box.classList.add("show");
+  content.innerHTML = diagEntries.map(d=>`
+    <div class="diag-row">
+      <span class="diag-status ${d.status}">${d.status.toUpperCase()}</span>
+      <span><strong>${d.name}</strong> (${d.method}) — ${d.detail}</span>
+    </div>`).join("") +
+    (failCount === diagEntries.length ?
+      `<p style="margin-top:10px;"><strong>All sources failed.</strong> This strongly suggests your network/firewall is blocking
+      <code>api.rss2json.com</code> and <code>api.allorigins.win</code>. Try opening this file on a personal device/network,
+      or ask IT to whitelist these two domains.</p>`
+      : `<p style="margin-top:10px;">Some sources loaded fine — partial network restrictions likely, or temporary rate-limiting on the free API tier.</p>`);
+}
+
+/* ============ RENDERING ============ */
+
+function highlight(text, terms){
+  let out = text;
+  terms.forEach(t=>{
+    const re = new RegExp("("+t+")","ig");
+    out = out.replace(re, "<mark>$1</mark>");
+  });
+  return out;
+}
+
+function extractPublisher(title){
+  const parts = title.split(" - ");
+  return parts.length > 1 ? parts[parts.length-1] : "";
+}
+
+function extractCountry(title){
+  const known = ["Pakistan","Malaysia","Indonesia","Saudi Arabia","UAE","Bahrain","Kuwait","Qatar","Oman","Bangladesh",
+    "Turkiye","Turkey","Egypt","Nigeria","Iraq","Brunei","Ethiopia","Iran","Kenya","Uganda","Sri Lanka","UK","United Kingdom"];
+  const found = known.find(c => title.toLowerCase().includes(c.toLowerCase()));
+  return found || null;
+}
+
+function render(){
+  const grid = document.getElementById("grid");
+  const q = document.getElementById("searchBox").value.trim().toLowerCase();
+  const keyTerms = ["Sukuk","Takaful","Shariah","Murabaha","Ijarah","Musharakah","Mudarabah","Pakistan","AAOIFI","IFSB","export","distribution","tender","franchise"];
+
+  let items = allItems[currentMode] || [];
+
+  if(currentMode === "news" && activeCategory.news !== "All"){
+    items = items.filter(it => it.category === activeCategory.news);
+  }
+  if(currentMode === "business" && activeCategory.business !== "All"){
+    items = items.filter(it => it.category === activeCategory.business);
+  }
+  if(q){
+    items = items.filter(it =>
+      it.title.toLowerCase().includes(q) || it.description.toLowerCase().includes(q));
+  }
+
+  if(items.length === 0){
+    grid.innerHTML = '<div class="empty">No results match this filter yet. Try Refresh, switch region/category, or clear the search box.</div>';
+    return;
+  }
+
+  grid.innerHTML = items.slice(0,120).map(it=>{
+    const publisher = extractPublisher(it.title);
+    const country = extractCountry(it.title);
+    const date = it.pubDate ? new Date(it.pubDate).toLocaleDateString(undefined,{day:'2-digit',month:'short',year:'numeric'}) : "";
+    return `
+      <div class="card">
+        <div class="meta">
+          <span class="badge">${it.category}</span>
+          ${country ? `<span class="country-badge">${country}</span>` : ""}
+          <span>${date}</span>
+        </div>
+        <a class="title" href="${it.link}" target="_blank" rel="noopener">${highlight(it.title, keyTerms)}</a>
+        <div class="desc">${highlight(it.description, keyTerms)}</div>
+        <div class="source">${publisher || it.source}</div>
+      </div>`;
+  }).join("");
+}
+
+/* ============ INIT ============ */
+
+document.getElementById("searchBox").addEventListener("input", render);
+buildModeNav();
+switchMode("news");
+setInterval(loadCurrentView, 30*60*1000);
+</script>
+</body>
+</html>
